@@ -7,6 +7,9 @@ import wave
 
 import numpy
 
+import struct
+
+
 import sys
 
 
@@ -14,7 +17,7 @@ import sys
 def recordWav(filename, seconds = 5):
     
     CHUNK = 1024
-    FORMAT = pyaudio.paInt16
+    FORMAT = pyaudio.paInt32
     CHANNELS = 2
     RATE = 44100
     RECORD_SECONDS = seconds
@@ -35,11 +38,22 @@ def recordWav(filename, seconds = 5):
     for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
         data = stream.read(CHUNK)
         frames.append(data)
+        
+    mult = len(data)//CHUNK
     
-    readD = numpy.fromstring(data, "Int32") 
+    #data= data[0:2] + data[4:]
+    print(len(data))
+    print(data)
     
-    for num in readD:
-        print(num)
+        
+
+    print(mult)
+    structD = struct.unpack(str(CHUNK*mult) +'b', data)
+    #readD = numpy.fromstring(data, "Int32") 
+    
+    print(structD)
+    # for num in structD:
+    #     print(num)
     print("* done recording")
     
     stream.stop_stream()
