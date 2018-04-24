@@ -57,6 +57,7 @@ pitch_o.set_tolerance(tolerance)
 print("*** starting recording")
 while True:
     try:
+        #audio buffer is data
         audiobuffer = stream.read(buffer_size)
         signal = np.fromstring(audiobuffer, dtype=np.float32)
 

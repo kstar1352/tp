@@ -4,6 +4,9 @@ import pyaudio
 
 import numpy as np
 
+
+import aubio
+
 import struct
 
 
@@ -14,14 +17,20 @@ from tkinter import *
 ####################################
 
 def init(data):
-    # load data.xyz as appropriate
+
     data.mode = "homePage"
     data.rectangles = []
     data.rec = True
     
+    #pitch variables
+    data.pitch = 0
+    data.highestPitch = 0
+    
+    data.backColor = "black"
+    
     
     #create 8 rectangles for frequency buckets and change height
-    data.rectW= (data.width//2)//8
+    data.rectW= (data.width*2//3)//16
     
     data.r1Color = "red"
     data.h1 = 5
@@ -65,6 +74,46 @@ def init(data):
     data.h8 = 5
     data.rect8 = [data.rectW*8, data.h8,data.r8Color]
     data.rectangles.append(data.rect8)
+    
+    data.r9Color = "violet"
+    data.h9 = 5
+    data.rect9 = [data.rectW*9, data.h9,data.r9Color]
+    data.rectangles.append(data.rect9)
+    
+    data.r10Color = "violet"
+    data.h10 = 5
+    data.rect10 = [data.rectW*10, data.h10,data.r10Color]
+    data.rectangles.append(data.rect10)
+    
+    data.r11Color = "violet"
+    data.h11 = 5
+    data.rect11 = [data.rectW*11, data.h11,data.r11Color]
+    data.rectangles.append(data.rect11)
+    
+    data.r12Color = "violet"
+    data.h12 = 5
+    data.rect12 = [data.rectW*12, data.h12,data.r12Color]
+    data.rectangles.append(data.rect12)
+    
+    data.r13Color = "violet"
+    data.h13 = 5
+    data.rect13 = [data.rectW*13, data.h13,data.r13Color]
+    data.rectangles.append(data.rect13)
+    
+    data.r14Color = "violet"
+    data.h14 = 5
+    data.rect14 = [data.rectW*14, data.h14,data.r14Color]
+    data.rectangles.append(data.rect14)
+    
+    data.r15Color = "violet"
+    data.h15 = 5
+    data.rect15 = [data.rectW*15, data.h15,data.r15Color]
+    data.rectangles.append(data.rect15)
+    
+    data.r16Color = "violet"
+    data.h16 = 5
+    data.rect16 = [data.rectW*16, data.h16, data.r16Color]
+    data.rectangles.append(data.rect16)
             
 def mousePressed(event, data):
     # use event.x and event.y
@@ -159,9 +208,9 @@ def record(data):
     #instantiate variables
     
 
-    CHUNK = 1024
-    FORMAT = pyaudio.paInt32
-    CHANNELS = 2
+    CHUNK = 1024 
+    FORMAT = pyaudio.paFloat32
+    CHANNELS = 1
     RATE = 44100
     
     
@@ -188,62 +237,137 @@ def record(data):
         #                 input=True,
         #                 frames_per_buffer=CHUNK)
                         
-        print("* recording")
+        #print("* recording")
         
         frames = []
         
         audioData = stream.read(CHUNK)
         
         mult = len(audioData)//CHUNK
+        #intD = struct.unpack(str(CHUNK*mult) + 'b', audioData)
+        intD = np.frombuffer(audioData, dtype = np.int16)
         readD = np.array(struct.unpack(str(CHUNK*mult) +"b", audioData))[::2] 
         
-        #change to frequency
-        freq = np.fft.fft(readD)
-        freq = freq[1:len(freq)//2]
-        #print("len of freq:", freq)
-        # for i in range(len(freq)):
-        #     if i < len(freq) //8:
-        #         data.rectangles[0][1] += abs(freq[i]//1000)
-        #     elif i < len(freq)*2//8:
-        #         data.rectangles[1][1] += abs(freq[i]//1000)
-        #     elif i < len(freq)*3//8:
-        #         data.rectangles[2][1] += abs(freq[i]//1000)
-        #     elif i < len(freq)*4//8:
-        #         data.rectangles[3][1] += abs(freq[i]//1000)
-        #     elif i < len(freq)*5//8:
-        #         data.rectangles[4][1] += abs(freq[i]//1000)
-        #     elif i < len(freq)*6//8:
-        #         data.rectangles[5][1] += abs(freq[i]//1000)
-        #     elif i < len(freq)*7//8:
-        #         data.rectangles[6][1] += abs(freq[i]//1000)
-        #     else:
-        #         data.rectangles[7][1] += abs(freq[i]//1000)
+        #pitch detection
+        pDetection = aubio.pitch("default", CHUNK,
+            CHUNK, RATE)
+            
+        # Set unit.
+        pDetection.set_unit("midi")
+        pDetection.set_silence(-40)
+        pDetection.set_tolerance(.6)
+                
+        pitchSamples = np.fromstring(audioData, dtype = aubio.float_type)
+        pitch = pDetection(pitchSamples)[0]
+        
+        data.pitch = pitch
+        
+        if data.pitch>110:
+            data.backColor = "cyan"
+        
+        if data.pitch >105:
+            data.backColor = "azure"
+        elif data.pitch > 95:
+            data.backColor = "deep sky blue"
+        elif data.pitch > 88:
+            data.backColor = "medium spring green"
+        elif data.pitch > 81:
+            data.backColor = "purple2"
+        elif data.pitch > 75:
+            data.backColor = "goldenrod1"
+        elif data.pitch > 68:
+            data.backColor = "firebrick4"
+        else:
+            data.backColor = "gray1"
+    
+            
+ 
+        print(pitch)
+        
+        ###change something for the pitch
+        
+        
+        #to find volume possibly
+        #volume = num.sum(samples**2)/len(samples)
+        # Format the volume output so that at most
+        # it has six decimal numbers.
+        #volume = "{:.6f}".format(volume)
 
+        
+        #change to frequency
+        freq = np.fft.fft(intD[::3])
+        freq = freq.real
+        
+        #print(intD)
+        #print("len of freq:", len(freq))
+        
+        max1 = 10000
+        max2 = 1000000
+
+
+        #for now instead of threading
+        # for i in range(len(freq)):
+        #     if i < len(freq)//16:
+        #         data.rectangles[0][1] += 2*abs(freq[i]//max2)
+        #     elif i < len(freq)*2//16:
+        #         data.rectangles[1][1] += 2*abs(freq[i]//max2)
+        #     elif i < len(freq)*3//16:
+        #         data.rectangles[2][1] += 2*abs(freq[i]//max2)
+        #     elif i < len(freq)*4//16:
+        #         data.rectangles[3][1] += 2*abs(freq[i]//max2)
+        #     elif i < len(freq)*5//16:
+        #         data.rectangles[4][1] += 2*abs(freq[i]//max2)
+        #     elif i < len(freq)*6//16:
+        #         data.rectangles[5][1] += 2*abs(freq[i]//max2)
+        #     elif i < len(freq)*7//16:
+        #         data.rectangles[6][1] += 2*abs(freq[i]//max2)
+        #         
+        #     elif i < len(freq)*8//16:
+        #         data.rectangles[7][1] += 2*abs(freq[i]//max2)
+        #     elif i < len(freq)*9//16:
+        #         data.rectangles[8][1] += 2*abs(freq[i]//max2)
+        #     elif i < len(freq)*10//16:
+        #         data.rectangles[9][1] += 2*abs(freq[i]//max2)
+        #     elif i < len(freq)*11//16:
+        #         data.rectangles[10][1] += 2*abs(freq[i]//max2)
+        #     elif i < len(freq)*12//16:
+        #         data.rectangles[11][1] += 2*abs(freq[i]//max2)
+        #     elif i < len(freq)*13//16:
+        #         data.rectangles[12][1] += 2*abs(freq[i]//max2)
+        #         
+        #     elif i < len(freq)*14//16:
+        #         data.rectangles[13][1] = 5 + 2*abs(freq[i]//max1)
+        #     elif i < len(freq)*15//16:
+        #         data.rectangles[14][1] = 5 + 2*abs(freq[i]//max1)
+        #     else:
+        #         data.rectangles[15][1] = 5 + 2*abs(freq[i]//max1)
+        
         for i in range(len(freq)):
-            if i < len(freq) //8:
-                data.rectangles[0][1] = 5 + abs(freq[i]//50)
+            if i < len(freq)//8:
+                data.rectangles[0][1] += 2*abs(freq[i]//max2)
             elif i < len(freq)*2//8:
-                data.rectangles[1][1] = 5 + abs(freq[i]//50)
+                data.rectangles[1][1] += 2*abs(freq[i]//max2)
             elif i < len(freq)*3//8:
-                data.rectangles[2][1] = 5 + abs(freq[i]//50)
+                data.rectangles[2][1] += 2*abs(freq[i]//max2)
             elif i < len(freq)*4//8:
-                data.rectangles[3][1] = 5 + abs(freq[i]//50)
+                data.rectangles[3][1] += 2*abs(freq[i]//max2)
             elif i < len(freq)*5//8:
-                data.rectangles[4][1] = 5 + abs(freq[i]//50)
+                data.rectangles[4][1] += 2*abs(freq[i]//max2)
             elif i < len(freq)*6//8:
-                data.rectangles[5][1] = 5 + abs(freq[i]//50)
+                data.rectangles[5][1] += 2*abs(freq[i]//max2)
             elif i < len(freq)*7//8:
-                data.rectangles[6][1] = 5 + abs(freq[i]//50)
-            else:
-                data.rectangles[7][1] = 5 + abs(freq[i]//50)
+                data.rectangles[6][1] += 2*abs(freq[i]//max2)
         
     stream.stop_stream()
     stream.close()
     p.terminate()
-    print("done recording")
+    #print("done recording")
     
-def resetRects(data):
+    
+def resetRects(canavs, data):
     for rect in data.rectangles:
+        canavs.create_rectangle(rect[0]-data.rectW, data.height-5, 
+                                rect[0], data.height, fill = rect[2])
         rect[1] = 5
         
 def liveTimerFired(data):
@@ -253,7 +377,7 @@ def liveTimerFired(data):
     #do I also need to do threading here?
     #record for a second then display graphics # repeat for threading
     record(data)
-    #resetRects(data)
+    
     if data.rec == False:
         data.mode = "select"
     
@@ -264,6 +388,10 @@ def drawRectangles(canvas, data):
         canvas.create_rectangle(rect[0] -data.rectW, data.height-rect[1],
                                 rect[0], data.height, fill = rect[2])
         
+        
+def drawBackground(canvas, data):
+    
+    canvas.create_rectangle(0,0, data.width, data.height, fill = data.backColor)
     
     
 #create title
@@ -273,8 +401,11 @@ def drawLiveTitle(canvas, data):
 
                       
 def liveRedrawAll(canvas, data):
+    drawBackground(canvas, data)
     drawLiveTitle(canvas, data)
     drawRectangles(canvas, data)
+    resetRects(canvas,data)
+    
     
 
 ###################
@@ -345,7 +476,7 @@ def run(width=300, height=300):
     data = Struct()
     data.width = width
     data.height = height
-    data.timerDelay = 100 # milliseconds
+    data.timerDelay = 10 # milliseconds
     root = Tk()
     init(data)
     # create the root and the canvas
