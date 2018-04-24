@@ -16,6 +16,7 @@ import sys
 
 def recordWav(filename, seconds = 5):
     
+    #insipired from online code
     CHUNK = 1024
     FORMAT = pyaudio.paInt32
     CHANNELS = 2

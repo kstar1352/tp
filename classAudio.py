@@ -21,6 +21,7 @@ class Audio(object):
         
     def record(self, file, seconds = 5):
         
+        #insipired from online code
         #initial variables
         Chunk = 1024
         Channels = 2

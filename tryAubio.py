@@ -18,7 +18,10 @@ import sys
 import numpy as np
 import aubio
 
-# initialise pyaudio
+
+#this is from stack overflow
+
+#initialise pyaudio
 p = pyaudio.PyAudio()
 
 # open stream

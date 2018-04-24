@@ -20,7 +20,8 @@ import matplotlib.pyplot as plt
 
 
 def playWav(filename):
-
+    
+    #insipired from online code
     wf = wave.open(filename, 'rb')
     Chunk = 1024
     # Instantiate PyAudio.
@@ -51,9 +52,6 @@ def playWav(filename):
     print(len(structData))
     
 
-    
-
-        
 
     while len(data) > 0:
         stream.write(data)
