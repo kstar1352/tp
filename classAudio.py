@@ -25,7 +25,7 @@ class Audio(object):
         #initial variables
         Chunk = 1024
         Channels = 2
-        Format = pyaudio.paFloat32
+        Format = pyaudio.paInt32
         Rate = 44100
         recordSeconds= seconds
         outputFile = file

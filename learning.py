@@ -23,9 +23,8 @@ from scipy import signal
 
 totalD = np.array(tuple([]))
 print(type(totalD))
-T = True
 i = 0
-while i<=1:
+while i<1:
     
     #insipired from online code
     CHUNK = 1024 
@@ -43,6 +42,7 @@ while i<=1:
                     channels=CHANNELS,
                     rate=RATE,
                     input=True,
+                    output = True,
                     frames_per_buffer=CHUNK)
                     
     frames = []
@@ -51,23 +51,37 @@ while i<=1:
     data = stream.read(CHUNK)
     
     mult = len(data)//CHUNK
-    intD = struct.unpack(str(CHUNK*mult) +"b", data)
     
-    readD = np.array(struct.unpack(str(CHUNK*mult) +"b", data))[::2] 
+    intD = np.fromstring(data, dtype = np.int16)[::2]
+    
+    #intD = struct.unpack(str(CHUNK*mult) +"b", data)[::2]
+    
+    #readD = np.array(struct.unpack(str(CHUNK*mult) +"b", data))[::2] 
+    
+    #readD = np.array(struct.unpack(str(CHUNK*mult) +"b", data))
     
     #pitch = aubio.pitch(CHUNK)
     
-    signal = readD
+    #signal = readD
     
-    n = signal.size
+    #n = signal.size
     
-    Fourier = np.fft.fft(readD)
+    #Fourier = np.fft.fft(readD)
     
-    freq = np.fft.fftfreq(n, d = 1/44100)
+    #Fourier = np.fft.fft(intD)
     
-    finalFreq = freq[:len(freq)//2]
+    #realFourier = np.abs(Fourier[:len(Fourier)//2])
     
-    realFourier = np.abs(Fourier[:len(Fourier)//2])
+    #freq = np.fft.fftfreq(n, d = 1/44100)
+    
+    #finalFreq = freq[:len(freq)//2]
+    
+    # for i in range(len(realFourier)):
+    #     print(realFourier[i])
+    
+    for i in range(len(intD)):
+        print(intD[i])
+    
     
     
     bucket1 = 0
@@ -86,35 +100,35 @@ while i<=1:
     # by doing n and d = 1/44100. Finally cut down both the lists to first half. 
     # Then create buckets to make sure they are working properly. 
     
-    print("number of frequencies: ", len(finalFreq))
-    print("Fourier frequencies:", realFourier)
-    for i in range(len(finalFreq)):
-        
-        if i < len(finalFreq)//8:
-            bucket1 += finalFreq[i]
+    # print("number of frequencies: ", len(finalFreq))
+    # print("Fourier frequencies:", realFourier)
+    # for i in range(len(finalFreq)):
+    #     
+    #     if i < len(finalFreq)//8:
+    #         bucket1 += realFourier[i]
+    #         
+    #     elif i < len(finalFreq)*2//8:
+    #         bucket2+= realFourier[i]
+    #         
+    #     elif i < len(finalFreq)*3//8:
+    #         bucket3+= realFourier[i]
+    #         
+    #     elif i < len(finalFreq)*4//8:
+    #         bucket4+= realFourier[i]
+    #         
+    #     elif i < len(finalFreq)*5//8:
+    #         bucket5+= realFourier[i]
+    #         
+    #     elif i < len(finalFreq)*6//8:
+    #         bucket6+= realFourier[i]
+    #         
+    #     elif i < len(finalFreq)*7//8:
+    #         bucket7 += realFourier[i]
+    #     else:
+    #         bucket8 += realFourier[i]
             
-        elif i < len(finalFreq)*2//8:
-            bucket2+= finalFreq[i]
-            
-        elif i < len(finalFreq)*3//8:
-            bucket3+= finalFreq[i]
-            
-        elif i < len(finalFreq)*4//8:
-            bucket4+= finalFreq[i]
-            
-        elif i < len(finalFreq)*5//8:
-            bucket5+= finalFreq[i]
-            
-        elif i < len(finalFreq)*6//8:
-            bucket6+= finalFreq[i]
-            
-        elif i < len(finalFreq)*7//8:
-            bucket7+= finalFreq[i]
-        else:
-            bucket8 += finalFreq[i]
-            
-        print("freq: ", finalFreq[i])
-        print("amount: ", np.abs(realFourier[i])) 
+        #print("freq: ", realFourier[i])
+        #print("amount: ", realFourier[i]) 
         
         
     #print("frequency buckets: ", freq[:len(freq)//2])
@@ -135,14 +149,13 @@ while i<=1:
     
         
     i +=1
-    if i ==2:
-        T = False
     
     #print(readD)
     #print(type(readD))
 
     
 #plt.plot(readD)
+plt.plot(intD)
 #plt.psd(readD,1024, 44100)
 #plt.plot(Fourier)
 #plt.semilogx(pS, fsd)
@@ -150,6 +163,8 @@ while i<=1:
 #plt.plot(psd)
 #plt.show()
 #plt.tight_layout()
+
+#print(len(intD), len(readD), len(finalFreq))
 
 print("bucket1: ", bucket1)
 print("bucket2: ", bucket2)
@@ -164,4 +179,4 @@ print("bucket8: ", bucket8)
 # a = [1, 0, -1, 0, 1]
 # 
 # plt.plot(a)
-# plt.show()
+plt.show()
