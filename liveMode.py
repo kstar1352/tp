@@ -35,8 +35,12 @@ def record(data):
     
 
     CHUNK = 1024 
-    FORMAT = pyaudio.paInt16
-    CHANNELS = 2
+    #need it to be float for pitch, but int for frequencies
+    #FORMAT = pyaudio.paFloat32
+    FORMAT = pyaudio.paInt32
+
+    
+    CHANNELS = 1
     RATE = 44100
     
     
@@ -56,9 +60,47 @@ def record(data):
         
         audioData = stream.read(CHUNK)
         
-    
-        wavD = np.fromstring(audioData, dtype = np.int16)
-        print(wavD[:10],wavD[-10:])
+        #PITCH DETECTION
+        # pDetection = aubio.pitch("default", CHUNK,
+        #     CHUNK, RATE)
+        #     
+        # # Set unit.
+        # pDetection.set_unit("midi")
+        # pDetection.set_silence(-40)
+        # pDetection.set_tolerance(.6)
+        #         
+        # pitchSamples = np.fromstring(audioData, dtype = aubio.float_type)
+        # #pitchSamples = np.fromstring(audioData, dtype = np.int16)
+        # 
+        # pitch = pDetection(pitchSamples)[0]
+        
+        #data.pitch = pitch
+        
+        # if data.pitch>110:
+        #     data.backColor = "cyan"
+        # 
+        # if data.pitch >105:
+        #     data.backColor = "azure"
+        # elif data.pitch > 95:
+        #     data.backColor = "deep sky blue"
+        # elif data.pitch > 88:
+        #     data.backColor = "medium spring green"
+        # elif data.pitch > 81:
+        #     data.backColor = "purple2"
+        # elif data.pitch > 75:
+        #     data.backColor = "goldenrod1"
+        # elif data.pitch > 68:
+        #     data.backColor = "firebrick4"
+        # else:
+        #     data.backColor = "gray1"
+            
+        #print("Pitch: ", pitch)
+        
+        
+        
+        #FFT STUFF
+        wavD = np.fromstring(audioData, dtype = np.int32)
+        # print(wavD[:10],wavD[-10:])
         
         #change to frequency
         # fourier = np.fft.fft(wavD)
@@ -72,17 +114,17 @@ def record(data):
         fourier = fourier.real
         fourier = np.abs(fourier)
         fourier = fourier[:len(fourier)//2]
-        print(len(fourier))
+
 
         
-        print("sum of first bucket: ", sum(fourier[0:128]))
-        print("sum of second bucket: ", sum(fourier[128:256]))
-        print("sum of third bucket: ", sum(fourier[256:384]))
-        print("sum of fourth bucket: ", sum(fourier[384:512]))
-        print("sum of fifth bucket: ", sum(fourier[512:640]))
-        print("sum of sixth bucket: ", sum(fourier[640:768]))
-        print("sum of 7th bucket: ", sum(fourier[768:896]))
-        print("sum of last bucket: ", sum(fourier[896:1024]))
+        # print("sum of first bucket: ", sum(fourier[0:128]))
+        # print("sum of second bucket: ", sum(fourier[128:256]))
+        # print("sum of third bucket: ", sum(fourier[256:384]))
+        # print("sum of fourth bucket: ", sum(fourier[384:512]))
+        # print("sum of fifth bucket: ", sum(fourier[512:640]))
+        # print("sum of sixth bucket: ", sum(fourier[640:768]))
+        # print("sum of 7th bucket: ", sum(fourier[768:896]))
+        # print("sum of last bucket: ", sum(fourier[896:1024]))
 
         
         #print(fourier[:10], fourier[-128:])
@@ -94,7 +136,7 @@ def record(data):
         for i in range(8):
             buckets.append(0)
         
-        divisor = 10000
+        divisor = 10000000000
         modVal = len(fourier)//8
         j = -1
         for i in range(len(fourier)):
@@ -106,15 +148,9 @@ def record(data):
             buckets[j] += fourier[i]//divisor
             data.rectangles[j][1] += fourier[i]//divisor
             
-        for i in range(len(buckets)):
-            print("bucket "+ str(i+1)+ " : ", buckets[i])
+        # for i in range(len(buckets)):
+        #     print("bucket "+ str(i+1)+ " : ", buckets[i])
         
-        
-            
-        
-                
-        
-    
     
             
  
@@ -179,56 +215,43 @@ def record(data):
         #     else:
         #         data.rectangles[15][1] += 2*abs(fourier[i]//max1)
         
-        # for i in range(len(fourier)):
-        #     if i < len(fourier)//8:
-        #         data.rectangles[0][1] += 2*abs(fourier[i]//max2)
-        #     elif i < len(fourier)*2//8:
-        #         data.rectangles[1][1] += 2*abs(fourier[i]//max2)
-        #     elif i < len(fourier)*3//8:
-        #         data.rectangles[2][1] += 2*abs(fourier[i]//max2)
-        #     elif i < len(fourier)*4//8:
-        #         data.rectangles[3][1] += 2*abs(fourier[i]//max2)
-        #     elif i < len(fourier)*5//8:
-        #         data.rectangles[4][1] += 2*abs(fourier[i]//max2)
-        #     elif i < len(fourier)*6//8:
-        #         data.rectangles[5][1] += 2*abs(fourier[i]//max2)
-        #     elif i < len(fourier)*7//8:
-        #         data.rectangles[6][1] += 2*abs(fourier[i]//max2)
+
                 
         
         #PITCH DETECTION
-        pDetection = aubio.pitch("default", CHUNK,
-            CHUNK, RATE)
-            
-        # Set unit.
-        pDetection.set_unit("midi")
-        pDetection.set_silence(-40)
-        pDetection.set_tolerance(.6)
-                
-        pitchSamples = np.fromstring(audioData, dtype = aubio.float_type)
-        pitch = pDetection(pitchSamples)[0]
-        
-        data.pitch = pitch
-        
-        if data.pitch>110:
-            data.backColor = "cyan"
-        
-        if data.pitch >105:
-            data.backColor = "azure"
-        elif data.pitch > 95:
-            data.backColor = "deep sky blue"
-        elif data.pitch > 88:
-            data.backColor = "medium spring green"
-        elif data.pitch > 81:
-            data.backColor = "purple2"
-        elif data.pitch > 75:
-            data.backColor = "goldenrod1"
-        elif data.pitch > 68:
-            data.backColor = "firebrick4"
-        else:
-            data.backColor = "gray1"
-            
-        print(pitch)
+        # pDetection = aubio.pitch("default", CHUNK,
+        #     CHUNK, RATE)
+        #     
+        # # Set unit.
+        # pDetection.set_unit("midi")
+        # pDetection.set_silence(-40)
+        # pDetection.set_tolerance(.6)
+        #         
+        # pitchSamples = np.fromstring(audioData, dtype = aubio.float_type)
+        # 
+        # pitch = pDetection(pitchSamples)[0]
+        # 
+        # data.pitch = pitch
+        # 
+        # if data.pitch>110:
+        #     data.backColor = "cyan"
+        # 
+        # if data.pitch >105:
+        #     data.backColor = "azure"
+        # elif data.pitch > 95:
+        #     data.backColor = "deep sky blue"
+        # elif data.pitch > 88:
+        #     data.backColor = "medium spring green"
+        # elif data.pitch > 81:
+        #     data.backColor = "purple2"
+        # elif data.pitch > 75:
+        #     data.backColor = "goldenrod1"
+        # elif data.pitch > 68:
+        #     data.backColor = "firebrick4"
+        # else:
+        #     data.backColor = "gray1"
+        #     
+        # print("Pitch: ", pitch)
         
     stream.stop_stream()
     stream.close()
