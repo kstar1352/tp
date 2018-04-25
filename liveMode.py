@@ -196,63 +196,65 @@ def record(data):
         p.terminate()
         
 
-        CHUNK = 1024 
-        #need it to be float for pitch, but int for frequencies
-        #FORMAT = pyaudio.paFloat32
-        pFORMAT = pyaudio.paFloat32
-        CHANNELS = 1
-        RATE = 44100
-        
-        
-        p = pyaudio.PyAudio()
-        
-        stream = p.open(format=pFORMAT,
-                        channels=CHANNELS,
-                        rate=RATE,
-                        input=True,
-                        frames_per_buffer=CHUNK)
-        
-        
-        pitchData = stream.read(CHUNK)
-        
-        #PITCH DETECTION
-        pDetection = aubio.pitch("default", CHUNK,
-             CHUNK, RATE)
-        #     
-        # # Set unit.
-        pDetection.set_unit("midi")
-        pDetection.set_silence(-40)
-        pDetection.set_tolerance(.4)
-        #         
-     
-        pitchSamples = np.fromstring(pitchData, dtype = aubio.float_type)
-        # 
-        pitch = pDetection(pitchSamples)[0]
-        # 
-        data.pitch = pitch
-        # 
-        if data.pitch>110:
-            data.backColor = "cyan"
-        # 
-        if data.pitch >105:
-            data.backColor = "azure"
-        elif data.pitch > 95:
-            data.backColor = "deep sky blue"
-        elif data.pitch > 88:
-            data.backColor = "medium spring green"
-        elif data.pitch > 81:
-            data.backColor = "purple2"
-        elif data.pitch > 75:
-            data.backColor = "goldenrod1"
-        elif data.pitch > 68:
-            data.backColor = "firebrick4"
-        else:
-            data.backColor = "gray1"
-            
-        
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
+    ## uncomment below to include laggy pitch detection
+
+   #       CHUNK = 1024 
+    #     #need it to be float for pitch, but int for frequencies
+    #     #FORMAT = pyaudio.paFloat32
+    #     pFORMAT = pyaudio.paFloat32
+    #     CHANNELS = 1
+    #     RATE = 44100
+    #     
+    #     
+    #     p = pyaudio.PyAudio()
+    #     
+    #     stream = p.open(format=pFORMAT,
+    #                     channels=CHANNELS,
+    #                     rate=RATE,
+    #                     input=True,
+    #                     frames_per_buffer=CHUNK)
+    #     
+    #     
+    #     pitchData = stream.read(CHUNK)
+    #     
+    #     #PITCH DETECTION
+    #     pDetection = aubio.pitch("default", CHUNK,
+    #          CHUNK, RATE)
+    #     #     
+    #     # # Set unit.
+    #     pDetection.set_unit("midi")
+    #     pDetection.set_silence(-40)
+    #     pDetection.set_tolerance(.4)
+    #     #         
+    #  
+    #     pitchSamples = np.fromstring(pitchData, dtype = aubio.float_type)
+    #     # 
+    #     pitch = pDetection(pitchSamples)[0]
+    #     # 
+    #     data.pitch = pitch
+    #     # 
+    #     if data.pitch>110:
+    #         data.backColor = "cyan"
+    #     # 
+    #     if data.pitch >105:
+    #         data.backColor = "azure"
+    #     elif data.pitch > 95:
+    #         data.backColor = "deep sky blue"
+    #     elif data.pitch > 88:
+    #         data.backColor = "medium spring green"
+    #     elif data.pitch > 81:
+    #         data.backColor = "purple2"
+    #     elif data.pitch > 75:
+    #         data.backColor = "goldenrod1"
+    #     elif data.pitch > 68:
+    #         data.backColor = "firebrick4"
+    #     else:
+    #         data.backColor = "gray1"
+    #         
+    #     
+    # stream.stop_stream()
+    # stream.close()
+    # p.terminate()
     #print("done recording")
     
     
