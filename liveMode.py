@@ -38,8 +38,6 @@ def record(data):
     #need it to be float for pitch, but int for frequencies
     #FORMAT = pyaudio.paFloat32
     FORMAT = pyaudio.paInt32
-
-    
     CHANNELS = 1
     RATE = 44100
     
@@ -54,47 +52,25 @@ def record(data):
                         
     if data.rec == True:
 
-
+        CHUNK = 1024 
+        #need it to be float for pitch, but int for frequencies
+        #FORMAT = pyaudio.paFloat32
+        FORMAT = pyaudio.paInt32
+        CHANNELS = 1
+        RATE = 44100
+        
+        
+        p = pyaudio.PyAudio()
+        
+        stream = p.open(format=FORMAT,
+                        channels=CHANNELS,
+                        rate=RATE,
+                        input=True,
+                        frames_per_buffer=CHUNK)
         
         frames = []
         
         audioData = stream.read(CHUNK)
-        
-        #PITCH DETECTION
-        # pDetection = aubio.pitch("default", CHUNK,
-        #     CHUNK, RATE)
-        #     
-        # # Set unit.
-        # pDetection.set_unit("midi")
-        # pDetection.set_silence(-40)
-        # pDetection.set_tolerance(.6)
-        #         
-        # pitchSamples = np.fromstring(audioData, dtype = aubio.float_type)
-        # #pitchSamples = np.fromstring(audioData, dtype = np.int16)
-        # 
-        # pitch = pDetection(pitchSamples)[0]
-        
-        #data.pitch = pitch
-        
-        # if data.pitch>110:
-        #     data.backColor = "cyan"
-        # 
-        # if data.pitch >105:
-        #     data.backColor = "azure"
-        # elif data.pitch > 95:
-        #     data.backColor = "deep sky blue"
-        # elif data.pitch > 88:
-        #     data.backColor = "medium spring green"
-        # elif data.pitch > 81:
-        #     data.backColor = "purple2"
-        # elif data.pitch > 75:
-        #     data.backColor = "goldenrod1"
-        # elif data.pitch > 68:
-        #     data.backColor = "firebrick4"
-        # else:
-        #     data.backColor = "gray1"
-            
-        #print("Pitch: ", pitch)
         
         
         
@@ -215,43 +191,64 @@ def record(data):
         #     else:
         #         data.rectangles[15][1] += 2*abs(fourier[i]//max1)
         
+        stream.stop_stream()
+        stream.close()
+        p.terminate()
+        
 
-                
+        CHUNK = 1024 
+        #need it to be float for pitch, but int for frequencies
+        #FORMAT = pyaudio.paFloat32
+        pFORMAT = pyaudio.paFloat32
+        CHANNELS = 1
+        RATE = 44100
+        
+        
+        p = pyaudio.PyAudio()
+        
+        stream = p.open(format=pFORMAT,
+                        channels=CHANNELS,
+                        rate=RATE,
+                        input=True,
+                        frames_per_buffer=CHUNK)
+        
+        
+        pitchData = stream.read(CHUNK)
         
         #PITCH DETECTION
-        # pDetection = aubio.pitch("default", CHUNK,
-        #     CHUNK, RATE)
+        pDetection = aubio.pitch("default", CHUNK,
+             CHUNK, RATE)
         #     
         # # Set unit.
-        # pDetection.set_unit("midi")
-        # pDetection.set_silence(-40)
-        # pDetection.set_tolerance(.6)
+        pDetection.set_unit("midi")
+        pDetection.set_silence(-40)
+        pDetection.set_tolerance(.4)
         #         
-        # pitchSamples = np.fromstring(audioData, dtype = aubio.float_type)
+     
+        pitchSamples = np.fromstring(pitchData, dtype = aubio.float_type)
         # 
-        # pitch = pDetection(pitchSamples)[0]
+        pitch = pDetection(pitchSamples)[0]
         # 
-        # data.pitch = pitch
+        data.pitch = pitch
         # 
-        # if data.pitch>110:
-        #     data.backColor = "cyan"
+        if data.pitch>110:
+            data.backColor = "cyan"
         # 
-        # if data.pitch >105:
-        #     data.backColor = "azure"
-        # elif data.pitch > 95:
-        #     data.backColor = "deep sky blue"
-        # elif data.pitch > 88:
-        #     data.backColor = "medium spring green"
-        # elif data.pitch > 81:
-        #     data.backColor = "purple2"
-        # elif data.pitch > 75:
-        #     data.backColor = "goldenrod1"
-        # elif data.pitch > 68:
-        #     data.backColor = "firebrick4"
-        # else:
-        #     data.backColor = "gray1"
-        #     
-        # print("Pitch: ", pitch)
+        if data.pitch >105:
+            data.backColor = "azure"
+        elif data.pitch > 95:
+            data.backColor = "deep sky blue"
+        elif data.pitch > 88:
+            data.backColor = "medium spring green"
+        elif data.pitch > 81:
+            data.backColor = "purple2"
+        elif data.pitch > 75:
+            data.backColor = "goldenrod1"
+        elif data.pitch > 68:
+            data.backColor = "firebrick4"
+        else:
+            data.backColor = "gray1"
+            
         
     stream.stop_stream()
     stream.close()
