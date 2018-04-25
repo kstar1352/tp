@@ -1,3 +1,6 @@
+#Majority of this is from github at this link:
+#https://github.com/aubio/aubio/issues/78
+
 import aubio
 import numpy as num
 import pyaudio

@@ -1,3 +1,5 @@
+
+
 import pyaudio
 
 import numpy as np
@@ -9,6 +11,8 @@ import struct
 import scipy as sc 
 
 from scipy import fftpack
+
+
 
 ######################
 #live Mode
@@ -34,28 +38,28 @@ def record(data):
     #instantiate variables
     
 
-    CHUNK = 1024 
-    #need it to be float for pitch, but int for frequencies
-    #FORMAT = pyaudio.paFloat32
-    FORMAT = pyaudio.paInt32
-    CHANNELS = 1
-    RATE = 44100
-    
-    
-    p = pyaudio.PyAudio()
-    
-    stream = p.open(format=FORMAT,
-                    channels=CHANNELS,
-                    rate=RATE,
-                    input=True,
-                    frames_per_buffer=CHUNK)
+    # CHUNK = 1024 
+    # #need it to be float for pitch, but int for frequencies
+    # #FORMAT = pyaudio.paFloat32
+    # FORMAT = pyaudio.paInt16
+    # CHANNELS = 1
+    # RATE = 44100
+    # 
+    # 
+    # p = pyaudio.PyAudio()
+    # 
+    # stream = p.open(format=FORMAT,
+    #                 channels=CHANNELS,
+    #                 rate=RATE,
+    #                 input=True,
+    #                 frames_per_buffer=CHUNK)
                         
     if data.rec == True:
 
         CHUNK = 1024 
         #need it to be float for pitch, but int for frequencies
         #FORMAT = pyaudio.paFloat32
-        FORMAT = pyaudio.paInt32
+        FORMAT = pyaudio.paInt16
         CHANNELS = 1
         RATE = 44100
         
@@ -75,7 +79,7 @@ def record(data):
         
         
         #FFT STUFF
-        wavD = np.fromstring(audioData, dtype = np.int32)
+        wavD = np.fromstring(audioData, dtype = np.int16)
         # print(wavD[:10],wavD[-10:])
         
         #change to frequency
@@ -86,8 +90,8 @@ def record(data):
         # print(len(fourier))
         
         #fourier = fftpack.dct(wavD)
-        fourier = fftpack.rfft(wavD)
-        fourier = fourier.real
+        fourier = fftpack.dct(wavD)
+        #fourier = fourier.real
         fourier = np.abs(fourier)
         fourier = fourier[:len(fourier)//2]
 
@@ -112,7 +116,7 @@ def record(data):
         for i in range(8):
             buckets.append(0)
         
-        divisor = 10000000000
+        divisor = 100000
         modVal = len(fourier)//8
         j = -1
         for i in range(len(fourier)):
@@ -126,13 +130,6 @@ def record(data):
             
         # for i in range(len(buckets)):
         #     print("bucket "+ str(i+1)+ " : ", buckets[i])
-        
-    
-            
- 
-        
-        
-        ###change something for the pitch
         
         
         #to find volume possibly

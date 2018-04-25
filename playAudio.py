@@ -22,6 +22,8 @@ import matplotlib.pyplot as plt
 def playWav(filename):
     
     #insipired from online code
+    #got main parts from online code at: https://stackoverflow.com/questions/6951046/pyaudio-help-play-a-file?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+    
     wf = wave.open(filename, 'rb')
     Chunk = 1024
     # Instantiate PyAudio.
