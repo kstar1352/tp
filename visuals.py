@@ -32,6 +32,9 @@ def init(data):
     data.pitch = 0
     data.highestPitch = 0
     
+    data.beatCircle = 0
+    
+    
     data.backColor = "black"
     
     data.liveTitleC = "black"

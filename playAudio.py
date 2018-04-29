@@ -26,6 +26,7 @@ def playWav(filename):
     
     wf = wave.open(filename, 'rb')
     Chunk = 1024
+    
     # Instantiate PyAudio.
     p = pyaudio.PyAudio()
     
