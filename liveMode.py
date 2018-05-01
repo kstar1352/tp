@@ -12,20 +12,26 @@ import scipy as sc
 
 from scipy import fftpack
 
+import threading
+from queue import Queue
+import time 
+
 
 
 ######################
 #live Mode
 
 ######################
+
+
+
 def liveMousePressed(event, data):
     x = event.x
     y = event.y
     
-    if x > data.width//2:
-        data.rec = False
-        print("clicked")
-        #data.mode = "select"
+    if x > data.width-40 and y < 40:
+        data.mode = "homePage"
+    
     pass
     pass
     
@@ -43,10 +49,24 @@ def getFourier(audio, data):
     fourier = fftpack.dct(wavD)
     fourier = np.abs(fourier)
     fourier = fourier[:len(fourier)//2]
+
+    
+    # #beat detection
+    # currentBeat = np.abs(wavD)
+    # currentBeat = np.sum(wavD)
+    # 
+    # data.averageBeat.append(currentBeat)
+    # 
+    # #keep recent history of the song
+    # if len(data.averageBeat) > 15:
+    #     data.averageBeat.pop(0)
+    #     
+    # #print(np.average(data.averageBeat))
+    # if currentBeat > np.average(data.averageBeat):
+    #     data.beatCr = currentBeat//1000
     
     #create freq buckets
     buckets = []
-    bucket6 = []
     for i in range(8):
         buckets.append(0)
     
@@ -112,19 +132,37 @@ def getFourier(audio, data):
     #         data.rectangles[15][1] += 2*abs(fourier[i]//max1)
   
 def beat(audio, data):
-    wav = np.fromstring(audio, dtype = np.int16)
-    averageBeat = 100000
-    currentBeat = np.abs(wav)
-    currentBeat = np.sum(wav)
-    if currentBeat > averageBeat:
-        print("Beat: ", currentBeat)
-        data.beatCircle = currentBeat//1000
+    audioD = audio
+    wavD = np.fromstring(audioD, dtype = np.int16)
+
+    #beat detection
+    currentBeat = np.abs(wavD)
+    currentBeat = np.sum(wavD)
+    
+    data.averageBeat.append(currentBeat)
+    
+    #keep recent history of the song
+    if len(data.averageBeat) > 15:
+        data.averageBeat.pop(0)
+        
+    #print(np.average(data.averageBeat))
+    if currentBeat > np.average(data.averageBeat):
+        data.beatCr = currentBeat//1000
+        
+      
+      #beat through just a single monetary value  
+#     wav = np.fromstring(audio, dtype = np.int16)
+#     averageBeat = 100000
+#     currentBeat = np.abs(wav)
+#     currentBeat = np.sum(wav)
+#     if currentBeat > averageBeat:
+#         print("Beat: ", currentBeat)
+#         data.beatCr = currentBeat//1000
     
     
 def record(data):
     #instantiate variables
 
-                        
     if data.rec == True:
 
         CHUNK = 1024 
@@ -299,9 +337,9 @@ def drawBackground(canvas, data):
     canvas.create_rectangle(0,0, data.width, data.height, fill = data.backColor)
     
 def drawBeat(canvas, data):
-    canvas.create_oval(data.width//2, data.height//10, 
-                       data.width//2+data.beatCircle,
-                       data.height//10+data.beatCircle, fill = "Red")
+    canvas.create_oval(data.beatCx-data.beatCr, data.beatCy-data.beatCr, 
+                       data.beatCx+data.beatCr, data.beatCy+data.beatCr,
+                       fill = "Red")
     
     
 #create title

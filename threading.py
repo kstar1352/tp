@@ -1,12 +1,9 @@
 #most of this is form online tutorial at 
 #https://www.youtube.com/watch?v=NwH0HvMI4EA
+
 import threading
 from queue import Queue
 import time 
-
-printLock = threading.Lock() 
-
-q = Queue()
 
 
 ####
@@ -14,6 +11,11 @@ q = Queue()
 #However with the threading, we had 10 threads, each thread did two jobs all
 #at the same time so only took .4 seconds
 #####
+
+
+printLock = threading.Lock() 
+
+q = Queue()
 
 def exampleJob(worker):
     time.sleep(0.2)

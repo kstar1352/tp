@@ -4,6 +4,7 @@ import pyaudio
 
 import numpy as np
 
+import os
 
 from selectMode import *
 
@@ -25,21 +26,40 @@ from tkinter import *
 def init(data):
 
     data.mode = "homePage"
+    data.modes = ["Try it Live!", "Select"]
     data.rectangles = []
     data.rec = True
+    
+    data.count = 0
     
     #pitch variables
     data.pitch = 0
     data.highestPitch = 0
     
-    data.beatCircle = 0
-    
+    data.beatCr = 0
+    data.beatCx = data.width*3//4
+    data.beatCy = data.height//2
+    data.averageBeat = []
+        
     
     data.backColor = "black"
     
     data.liveTitleC = "black"
     
     
+    #mode variables
+    data.MM = data.width//10
+    
+    
+    #playMode variables
+    data.playAudio = 0
+    data.song = ""
+    
+    
+    data.directory = "/Users/kailasshekar/Desktop/cmu 112/TP"
+    
+    data.songs = []
+        
     #create 8 rectangles for frequency buckets and change height
     data.rectW= (data.width*2//3)//16
     
@@ -136,6 +156,8 @@ def mousePressed(event, data):
         
     elif (data.mode == "select"):       
         selectMousePressed(event,data)
+    elif (data.mode == "playMode"):       
+        playModeMousePressed(event,data)
 
 def keyPressed(event, data):
     # use event.char and event.keysym
@@ -148,17 +170,19 @@ def timerFired(data):
         liveTimerFired(data)
     elif data.mode == "select":
         selectTimerFired(data)
+    elif data.mode == "playMode":
+        playModeTimerFired(data)
 
 def redrawAll(canvas, data):
     # draw in canvas
     if data.mode == "homePage":
         homePageRedrawAll(canvas, data)
-        
     elif data.mode == "live":
         liveRedrawAll(canvas, data)
     elif data.mode == "select":
         selectRedrawAll(canvas, data)
-    
+    elif data.mode == "playMode":
+        playModeRedrawAll(canvas, data)
     
     
 
