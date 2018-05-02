@@ -17,20 +17,58 @@ import struct
 ###################
 
 def selectMousePressed(event,data):
-    pass
-    
-def selectKeyPressed(event,data):
     x = event.x
     y = event.y
     
-    if x < data.width//2+40 and y < data.height//2+20 and x > data.width//2-40\
-    and y > data.height//2-40:
-        data.mode = "playMode"
+    if x > data.width-40 and y < 40:
+        data.mode = "homePage"
+        
+    rows = data.songsLen//4
+    colF = data.songsLen%4
+    index = 0 
+    for i in range(rows+1):
+        for j in range(4):
+            
+            if i == rows and j >=colF:
+                return None
+            
+            if (x > data.width*j//4 + data.songM and \
+            x < data.width*(j+1)//4 - data.songM)\
+            and (y > data.height*(i+2)//8 and y < data.height*(i+3)//8):
+                print("clicked in index: ", index)
+                data.song = data.finalSongs[index]
+                print(data.finalSongs, data.song)
+                data.mode = "playMode"
+            
+            index +=1 
+
+    
+    # if x < data.width//2+40 and y < data.height//2+20 and x > data.width//2-40\
+    # and y > data.height//2-40:
+    #     data.mode = "playMode"
+    
+    
+def selectKeyPressed(event,data):
+    pass
     
 def selectTimerFired(data):
     if data.count == 0:
         getSongs(data.directory, data)
-        print(data.songs)
+        
+        for i in range(len(data.songs)):
+            if data.songs[i] != "":
+                data.songsLen +=1
+                flag = True
+                while flag:
+                    found = data.songs[i].find("/")
+                    if found == -1:
+                        flag = False
+                    else:
+                        data.songs[i] = data.songs[i][found+1:]
+                    
+                song = data.songs[i]
+                data.finalSongs.append(song)
+        print(data.finalSongs)
     data.count += 1
     
     
@@ -42,11 +80,28 @@ def drawSelect(canvas, data):
 
 def drawSongs(canvas, data):
     #getSongs(data.directory, data)
-    for i in range(len(data.songs)):
-        if data.songs[i] != "":
-            #this is all the songs
-            pass
-        
+    rows = data.songsLen//4
+    colF = data.songsLen%4
+    index = 0
+    for i in range(rows+1):
+        for j in range(4):
+            
+            #for last row when to stop
+            if i == rows and j >=colF:
+                return None
+                
+            #draw the boxes
+            canvas.create_rectangle(data.width*j//4 + data.songM,
+                                    data.height*(i+2)//8, 
+                                    data.width*(j+1)//4 - data.songM,
+                                    data.height*(i+3)//8, width = 2)
+
+            
+            #write the text
+            canvas.create_text(data.width*(j*2+1)//8, data.height*5//16,
+                               text = data.finalSongs[index][:-4])
+                               
+            index+=1
         
     #canvas.create_rectangle(data.width//2-40, data.height//2-20, data.width//2+40,
                             #data.height//2 +20, width = 5)
@@ -57,8 +112,7 @@ def getSongs(path, data):
     if path[-3:] == "wav" and (os.path.isdir(path) == False):
         return [path]
     elif os.path.isdir(path) == False:
-        #return [""]
-        return [path]
+        return [""]
     else:
         # recursive case: it's a folder, return list of all paths
         data.songs = []
