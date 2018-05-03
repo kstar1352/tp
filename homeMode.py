@@ -91,10 +91,19 @@ def drawLive(canvas, data):
                             data.height*3//4, width = 5)
     canvas.create_text(data.width*2//8, data.height*5//8, text = "Try it Live",
                        font = "Helevetica " + str(data.width//20))
+                       
+                       
+def drawHomeBack(canvas, data):
+    rows = 5
+    for i in range(rows):
+        canvas.create_rectangle(0,data.height*i//5, data.width, \
+                                data.height*(i+1)//5, fill = data.homeColors2[i],
+                                width = 0)
 
     
 def homePageRedrawAll(canvas, data):
     #title
+    drawHomeBack(canvas, data)
     drawTitle(canvas, data)
     drawModes(canvas, data)
     #drawLive(canvas, data)

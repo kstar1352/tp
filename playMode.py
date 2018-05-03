@@ -28,7 +28,8 @@ def playModeMousePressed(event,data):
     x = event.x
     y = event.y
     
-    if x> data.width*24//28 and y>data.height-40 and data.paused:
+    
+    if x > data.width*24//28 and y>data.height-40 and data.paused:
         data.paused = not data.paused
         data.stream.start_stream()
         
@@ -42,6 +43,7 @@ def playModeMousePressed(event,data):
             data.stream.close()
             data.p.terminate()
         data.mode = "homePage"
+        data.paused = False
     
     
 def drawPause(canvas, data):

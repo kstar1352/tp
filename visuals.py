@@ -50,6 +50,8 @@ def init(data):
                     ["#4d0099", "#5900b3", "#6600cc", "#7300e6", "#8000ff", "#8c1aff",\
                      "#9933ff", "#a64dff", "#b366ff", "#bf80ff"]]
 
+    data.homeColors1 = ["#ff80bf", "#ff99cc", "#ffb3d9", "#ffcce6", "#ffe6f2"]
+    data.homeColors2 = ["#ddccff", "#ccb3ff", "#bb99ff", "#aa80ff", "#9966ff"]
     
     
     data.mode = "homePage"
@@ -106,14 +108,15 @@ def init(data):
     data.songs = []
     data.finalSongs = []
     data.songsLen = 0
-    data.songM = data.width//20
+    data.songMw = data.width//30
+    data.songMh = data.height//45
     
     
     data.directory = "/Users/kailasshekar/Desktop/cmu 112/TP"
     
         
     #create 8 rectangles for frequency buckets and change height
-    data.rectW= (data.width*2//3)//16
+    data.rectW= (data.width//2)//10
     
     
     data.rectColor = ["#004080", "#004d99", "#0059b3", "#0066cc", "#0073e6", "#0080ff",\
