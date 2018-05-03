@@ -124,7 +124,7 @@ def getLiveRotSpeed(audio, data):
     speed = np.abs(wavD)
     speed = np.sum(speed)
     
-    data.radius = speed//9000 
+    data.radius = speed//60000 
     data.speed = data.radius/130
     #data.speed = speed//100000
     
@@ -140,7 +140,7 @@ def getRotSpeed(audio, data):
     speed = np.abs(wavD)
     speed = np.sum(speed)
     
-    data.radius = speed//250000
+    data.radius = speed//350000
     data.speed = data.radius/100
     #data.speed = speed//30000000
     
@@ -168,7 +168,7 @@ def liveBeat(audio, data):
     maxR = min(data.width//40, data.height//30)
     
     
-    data.beatCr = np.abs(currentBeat//300000)
+    data.beatCr = np.abs(currentBeat//400000)
     
     if data.beatCr +3 > maxR:
         data.rows = 15
@@ -221,6 +221,8 @@ def beat(audio, data):
         data.rows = 15
         data.cols = 20
     
+    
+
     
 def record(data):
     #instantiate variables
@@ -296,7 +298,9 @@ def liveTimerFired(data):
     
     #do I also need to do threading here?
     #record for a second then display graphics # repeat for threading
-    record(data)
+    
+    
+    #record(data)
     
     if data.rec == False:
         data.mode = "select"
@@ -305,6 +309,7 @@ def drawRotating(canvas, data):
     
     min = 15
     
+        
     if data.radius <= 30:
         canvas.create_oval(data.width*3//4-min, data.height//2-min,
                            data.width*3//4+min, data.height//2+min,
@@ -321,8 +326,21 @@ def drawRotating(canvas, data):
                             
         for circ in data.rotCircles:
             circ[2] += data.speed
-
-    if data.radius >= 100:
+    
+    if data.radius >= 120:
+        smallerCirc = data.radius/2
+        smallerR = smallerCirc//5
+        for times in range(2):
+            for i in range(len(data.rotCircles)):
+                canvas.create_oval((data.width*3//4-smallerCirc*math.cos(data.rotCircles[i][2]))-smallerR,
+                                (data.height//2 - smallerCirc*math.sin(data.rotCircles[i][2]))-smallerR,
+                                (data.width*3//4-smallerCirc*math.cos(data.rotCircles[i][2]))+smallerR,
+                                (data.height//2 - smallerCirc*math.sin(data.rotCircles[i][2]))+smallerR,
+                                fill = data.rotColor[data.RCI%10])
+            smallerCirc -= 40
+            smallerR -= smallerCirc//5
+                            
+    elif data.radius >= 80:
         smallerCirc = data.radius/2
         smallerR = smallerCirc//5
         for i in range(len(data.rotCircles)):
@@ -344,7 +362,10 @@ def drawRectangles(canvas, data):
         
         
 def drawBackground(canvas, data):
-    canvas.create_rectangle(0,0, data.width+5, data.height+5, fill = data.backColor)
+    if data.radius ==150:
+        canvas.create_rectangle(0,0, data.width+5, data.height+5, fill = data.rotColor[data.RCI%10])
+    else:
+        canvas.create_rectangle(0,0, data.width+5, data.height+5, fill = data.backColor)
     
 def drawBeat(canvas, data):
     for i in range(data.rows-3):

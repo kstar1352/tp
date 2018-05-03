@@ -124,7 +124,6 @@ def init(data):
     data.rectangles.append(data.rect1)
     
 
-
     data.h2 = 5
     data.rect2 = [data.rectW*2, data.h2]
     data.rectangles.append(data.rect2)
@@ -149,7 +148,6 @@ def init(data):
     data.rect6 = [data.rectW*6, data.h6]
     data.rectangles.append(data.rect6)
             
-
 
     data.h7 = 5
     data.rect7 = [data.rectW*7, data.h7]
@@ -195,28 +193,6 @@ def keyPressed(event, data):
     # use event.char and event.keysym
     #makeStream()
     pass
-
-
-# def makeStream():
-#     global dat 
-#     
-#     data = dat
-#     data.p = pyaudio.PyAudio()
-#     
-#     
-#     #if not initialized
-#     if (data.stream != None):
-#         data.stream.stop_stream()
-#         
-#         
-#     data.stream = None
-#     data.stream = data.p.open(format=data.p.get_format_from_width(wf.getsampwidth()),
-#         channels=wf.getnchannels(),
-#         rate=intwf.getframerate(),
-#         output=True,
-#         stream_callback = callback)
-#         
-#     data.stream.start_stream()
     
     
 def callback(in_data, frame_count, time_info, status):
@@ -224,16 +200,7 @@ def callback(in_data, frame_count, time_info, status):
     data = dat
     
     audioD = wf.readframes(frame_count)
-    
-    #p = data.p
-    #stream = data.stream
-    
-    #diff = copy.copy(aduioD)
-    
-    #getFourier(audioD, data)
-    #beat(audioD, data)
-    #getRotSpeed(audioD, data)
-    
+        
     return(audioD, pyaudio.paContinue)
 
 
@@ -246,17 +213,6 @@ def timerFired(data):
         selectTimerFired(data)
     elif data.mode == "playMode":
         pass
-        #playModeTimerFired(data)
-        # global wf
-        # wf = wave.open("songs/"+data.song)
-        # data.p = pyaudio.PyAudio()
-        # 
-        # #p = data.p
-        # data.stream = data.p.open(format = data.p.get_format_from_width(wf.getsampwidth()),
-        #                     channels=wf.getnchannels(),
-        #                     rate=wf.getframerate(),
-        #                     output=True,
-        #                     stream_callback = callback)
     
 
 def redrawAll(canvas, data):

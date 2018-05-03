@@ -132,7 +132,7 @@ def drawSongs(canvas, data):
 
             
             #write the text
-            canvas.create_text(data.width*(j*2+1)//8, data.height*5//16,
+            canvas.create_text(data.width*(j*2+1)//8, data.height*(i*2+5)//16,
                                text = data.finalSongs[index][:-4])
                                
             index+=1

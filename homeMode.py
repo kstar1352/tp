@@ -1,14 +1,37 @@
+import module_manager
+module_manager.review()
+
 import pyaudio
 
 import numpy as np
 
 import aubio
 
+
 import struct
+
+from liveMode import *
+
+import globals
+
 
 ##########################
 #homePage
 ##########################
+
+def liveCallback(in_data, frame_count, time_info, status):
+    data = globals.dat
+    
+    audioD = in_data
+    
+    getLiveFourier(audioD, data)
+    liveBeat(audioD, data)
+    getLiveRotSpeed(audioD, data)
+    
+    return (audioD, pyaudio.paContinue)
+    
+    
+
 def homePageMousePressed(event,data):
     x = event.x
     y = event.y
@@ -17,6 +40,16 @@ def homePageMousePressed(event,data):
     if (x > data.MM and x < data.width//2 - data.MM) and \
         (y > data.height//2 and y < data.height*3//4):
             data.mode = "live"
+            
+            data = globals.dat
+            
+            data.p = pyaudio.PyAudio()
+            
+            data.stream = data.p.open(format = pyaudio.paInt16,
+                            channels=1,
+                            rate=44100,
+                            input=True,
+                            stream_callback = liveCallback)
             
     #for the song selection
     elif (x > data.MM+data.width//2 and x < data.width - data.MM) and \
