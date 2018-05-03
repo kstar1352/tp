@@ -10,11 +10,33 @@ import numpy as np
 
 import aubio
 
-import struct
+import wave
 
+from liveMode import *
+
+import struct
+import globals
 ###################
 #SELECT MODE
 ###################
+
+
+
+def callback(in_data, frame_count, time_info, status):
+    data = globals.dat
+    
+    audioD = wf.readframes(frame_count)
+    
+    #p = data.p
+    #stream = data.stream
+    
+    
+    getFourier(audioD, data)
+    beat(audioD, data)
+    getRotSpeed(audioD, data)
+    
+    return(audioD, pyaudio.paContinue)
+
 
 def selectMousePressed(event,data):
     x = event.x
@@ -38,6 +60,18 @@ def selectMousePressed(event,data):
                 print("clicked in index: ", index)
                 data.song = data.finalSongs[index]
                 print(data.finalSongs, data.song)
+                
+                global wf
+                wf = wave.open("songs/"+data.song)
+                data.p = pyaudio.PyAudio()
+        
+                #p = data.p
+                data.stream = data.p.open(format = data.p.get_format_from_width(wf.getsampwidth()),
+                            channels=wf.getnchannels(),
+                            rate=wf.getframerate(),
+                            output=True,
+                            stream_callback = callback)
+                            
                 data.mode = "playMode"
             
             index +=1 

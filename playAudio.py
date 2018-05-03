@@ -15,6 +15,8 @@ import sys
 
 import matplotlib.pyplot as plt
 
+import time
+
 
 #CHUNK = 1024
 
@@ -32,7 +34,7 @@ def playWav(filename):
     
     print("start playing")
     # Open stream.
-    stream = p.open(format=pyaudio.paInt32,
+    stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
         channels=wf.getnchannels(),
         rate=wf.getframerate(),
                     output=True)
@@ -40,10 +42,7 @@ def playWav(filename):
     data = wf.readframes(Chunk)
     dataLen = len(data)
     mult = dataLen//Chunk
-    
-    print(data)
-    
-    print(mult)
+
     
     structData = np.array(struct.unpack(str(mult * Chunk) + 'b', data))[::2]
 
@@ -59,11 +58,12 @@ def playWav(filename):
     while len(data) > 0:
         stream.write(data)
         data = wf.readframes(Chunk)
+        print("DATA STUFF OVER HERE!!!!!!!!!")
+        #print(data, end = "\n")
     
     print("end playing")
     
-    plt.plot(structData)
-    plt.show()
+
     
     #print(numData)
     
@@ -79,6 +79,9 @@ def playWav(filename):
     #         print(i)
     #     else:
     #         pass
+    
+    while stream.is_active():
+        time.sleep(.1)
             
     # Stop stream.
     stream.stop_stream()
@@ -98,3 +101,12 @@ def playWav(filename):
         fourier = np.abs(fourier)
         fourier = fourier[:len(fourier)//2]
         print(fourier)
+
+def callPlay(filename):
+    playWav(filename)
+   
+i = 0
+while i < 1000:
+    callPlay("songs/TryMe.wav")
+    i+=1
+    print("WILL THIS STOP HEREE??????????????????????")
